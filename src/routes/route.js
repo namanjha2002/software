@@ -21,7 +21,7 @@ router.get("/movies/:indexNumber", function(req, res){
     if(movieIndex<0 || movieIndex>=movies.length) {
         //if the index is invalid send an error message
         return res.send('The index value is not correct, Please check the it')
-    }
+}
 
     //if the index was valid send the movie at that index in response
     let requiredMovie = movies[movieIndex]
@@ -102,6 +102,33 @@ router.get("/films/:filmId", function(req, res){
        //if there is no match give an error response
        res.send("The film id doesn't match any movie")
 })
+//1
+router.get("/pr1", function(req, res){
+let a=[1,2,3,5,6,7];
+let total = (a.length+1)*(a.length+2)/2;
+for(i=0;i<a.length;i++){
+    total=total-a[i]
+}
+console.log(total)
+res.send(total)
+
+})
+//2
+router.get("/pr1", function(req, res){
+    let b =[33, 34, 35, 37, 38]
+    let sum = (b.length+1)*(33+38)/2;
+    for(i=0;i<b.length;i++){
+        sum=sum-b[i]
+    }
+    console.log(sum)
+    res.send(sum)
+})
+router.post('/test-post-4',function(req,res){
+    console.log(req.body)
+    res.send([25,26,27,28])
+
+})
+
 
 module.exports = router;
 // adding this comment for no reason
