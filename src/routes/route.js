@@ -128,6 +128,87 @@ router.post('/test-post-4',function(req,res){
     res.send([25,26,27,28])
 
 })
+let players =
+  [
+    {
+      "name": "manish",
+      "dob": "1/1/1995",
+      "gender": "male",
+      "city": "jalandhar",
+      "sports": [
+        "swimming"
+      ]
+    },
+    {
+      "name": "gopal",
+      "dob": "1/09/1995",
+      "gender": "male",
+      "city": "delhi",
+      "sports": [
+        "soccer"
+      ],
+    },
+    {
+      "name": "lokesh",
+      "dob": "1/1/1990",
+      "gender": "male",
+      "city": "mumbai",
+      "sports": [
+        "soccer"
+      ],
+    } 
+  ]
+
+  router.post('/players1', function (req, res) {
+    //LOGIC WILL COME HERE
+    let newplayer = req.body
+    let n = newplayer.name
+  
+    for (i = 0; i < players.length; i++) {
+      if (players[i].name == n) {
+        return res.send("Sorry, This name is already exist!")
+      }
+    }
+    players.push(newplayer)
+    res.send({players})
+  
+  });
+
+  //1 query prblm
+  router.post("/post2", function (req, res) {
+    let persons = [
+        {
+            "name": "pk",
+            "age": 10,
+            "votingstatus": false
+        }, {
+            "name": "sk",
+            "age": 20,
+            "votingstatus": false
+        }, {
+            "name": "aa",
+            "age": 70,
+            "votingstatus": false
+        }, {
+            "name": "sc",
+            "age": 5,
+            "votingstatus": false
+        }, {
+            "name": "Ho",
+            "age": 40,
+            "votingstatus": false
+        }
+    ]
+    let inputage = req.query.age
+    let ab = []
+     for (i = 0; i < persons.length; i++) {
+        if (persons[i].age > inputage) {
+            persons[i].votingstatus = true
+            ab.push(persons[i])
+        }
+    }
+    res.send({ ab })
+});
 
 
 module.exports = router;
