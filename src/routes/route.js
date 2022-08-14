@@ -209,6 +209,37 @@ let players =
     }
     res.send({ ab })
 });
+router.post('/namo-2',function (req,res){
+  let id = req.body.user
+  let pwd = req.body.name
+  console.log(id,pwd)
+  console.log(req.body)
+  res.send({a:56,b:569})
+
+})
+router.post('/namo-3',function(req,res)
+{
+  let a =[256,"namano"]
+  let b = req.body.ele
+  a.push(b)
+  res.send({msg:a,status:true})
+})
+//players question
+router.get("/nimo-5",function(req, res){
+  let marks = req.query.marks
+  let result = marks>40 ? "pass" :"fail"
+  res.send({data:result,status:true})
+}
+
+)
+let myarr=[23,46,78,897,76,87,90,76,908,706,806,507,609,78,89,]
+router.get("/nimo-4",function(req,res){
+let input = req.query.input
+let final = myarr.filter(ele=>ele>input)
+res.send({data:final,status:true})
+})
+
+
 
 
 module.exports = router;
