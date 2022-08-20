@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+/*const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema( {
     bookName: String, 
@@ -14,7 +14,7 @@ const bookSchema = new mongoose.Schema( {
 }, { timestamps: true });
 
 
-module.exports = mongoose.model('Book', bookSchema) //users
+module.exports = mongoose.model('Book', bookSchema) //users*/
 
 //Validation:
 //require:true

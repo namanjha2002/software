@@ -5,6 +5,7 @@ const bookSchema = new mongoose.Schema(
     bookName: {
       type: String,
       require: true,
+      unique: true
     },
     authorName: String,
     tags: [String],

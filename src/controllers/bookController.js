@@ -7,7 +7,7 @@ const createBooks = async function (req, res) {
 };
 
 const getAllBooks = async function (req, res) {
-  let allUsers = await bookModel.find({});
+  let allUsers = await bookModel.find();
   res.send({ msg: allUsers });
 };
 
@@ -19,8 +19,8 @@ const booksData = async function (req, res) {
 };
 
 const getBooksInYear = async function (req, res) {
-  let year = req.body.year;
-  let allBooks1 = await bookModel.find({ year: year });
+  let year = req.params.year;
+  let allBooks1 = await bookModel.find({ year:{$eq: year} });
   res.send({ msg: allBooks1 });
 };
 
@@ -30,7 +30,7 @@ const getparticularBOoks = async function (req, res) {
 };
 
 const getXINRBooks = async function (req, res) {
-  let indianBooks = await bookModel.find({ $in: ['100', '200', '500'] });
+  let indianBooks = await bookModel.find({"prices.indianPrice"{ $in: ['100', '200', '500'] }});
 
   res.send({ msg: indianBooks });
 };
