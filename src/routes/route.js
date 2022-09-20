@@ -5,9 +5,11 @@ const bookController = require('../controllers/bookController')
 const reviewController = require('../controllers/reviewController')
 const middleware = require('../middlewares/auth')
 
+router.get('/test', function(req, res){
+    return res.send({status: true, msg: "running"})
+})
 
-
-
+router.post('/register', userController.createUser)
 
 
 
