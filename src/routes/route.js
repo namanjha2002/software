@@ -17,4 +17,4 @@ const middleware = require('../middlewares/auth')
 
 
 
-module.export = router
+module.exports = router
