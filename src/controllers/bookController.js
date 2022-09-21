@@ -1,7 +1,82 @@
+const mongoose = require('mongoose')
+const moment = require('moment');
 const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
-const { isValidObjectId } = require("../validators/validator")
+const { isValid, regexIsbn, regexRating, isValidObjectId } = require("../validators/validator")
+
+
+const createBook = async function (req, res) {
+    try {
+        let data = req.body;
+        let { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted } = data;
+
+        let decodedId = req.token.userId
+
+        let usersId = userId
+        if (decodedId !== usersId) {
+            return res.status(403).send({ status: false, msg: "unauthorised access" })
+        }
+
+
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, msg: "please provide some data to create user" })
+        }
+        if (!isValid(userId)) {
+            return res.status(400).send({ status: false, msg: "please provide userId" })
+        }
+        if (!isValidObjectId(userId)) {
+            return res.status(400).send({ status: false, msg: "please provide  valid userId" })
+        }
+        let checkUser = await userModel.findById(userId)
+        if (!checkUser) return res.status(404).send({ status: false, msg: "userId not found" })
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, msg: "please provide a title" })
+        }
+        let checkTitle = await bookModel.findOne({ title })
+        if (checkTitle) return res.status(400).send({ status: false, message: "book with same title is already present...!" })
+
+        if (!isValid(excerpt)) {
+            return res.status(400).send({ status: false, msg: "please provide a excerpt" })
+        }
+
+        if (!isValid(ISBN)) {
+            return res.status(400).send({ status: false, msg: "please provide a ISBN" })
+        }
+        if (!regexIsbn.test(ISBN)) {
+            return res.status(400).send({ status: false, msg: "please provide Valid ISBN" })
+        }
+        let checkISBN = await bookModel.findOne({ ISBN })
+        if (checkISBN) return res.status(400).send({ status: false, message: "book with same ISBN is already present...!" })
+
+        if (!isValid(category)) {
+            return res.status(400).send({ status: false, msg: "please provide category" })
+        }
+        if (!isValid(subcategory)) {
+            return res.status(400).send({ status: false, msg: "please provide subcategory" })
+        }
+        if (reviews) {
+            if (!regexRating.test(reviews)) {
+                return res.status(400).send({ status: false, msg: "please review between 1 - 5" })
+            }
+        }
+        if (!isValid(releasedAt)) {
+            return res.status(400).send({ status: false, msg: "please provide releasedAt in proper format" })
+        }
+        if (releasedAt) {
+            moment().format("YYYY-MM-DD")
+        }
+
+        let bookdata = { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted }
+
+        let saveBook = await bookModel.create(bookdata);
+        return res.status(201).send({ status: true, msg: "book created successfully", data: saveBook })
+    }
+
+    catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
 
 
 const getBooksWithReview = async function (req, res) {
@@ -38,4 +113,5 @@ const getBooksWithReview = async function (req, res) {
     }
 }
 
+module.exports.createBook = createBook
 module.exports.getBooksWithReview = getBooksWithReview
