@@ -1,9 +1,14 @@
+const mongoose = require('mongoose')
+
 const isValid = function(value){
     if(!value || typeof value === "undefined" || value === null || typeof value != 'string') return false
     if(typeof value === "string" && value.trim().length === 0 ) return false
     return true
 }
 
+const isValidObjectId = (ObjectId) => {
+    return mongoose.Types.ObjectId.isValid(ObjectId)
+}
 
 // Regex
 const regexName = /^[A-Za-z][A-Za-z\'\-]+([\ A-Za-z][A-Za-z\'\-]+)*/
@@ -13,4 +18,4 @@ const regexPhone = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/
 const regexPincode = /^(\d{4}|\d{6})$/
 
 
-module.exports = {isValid, regexEmail, regexPassword, regexPhone, regexName, regexPincode}
+module.exports = {isValid, isValidObjectId, regexEmail, regexPassword, regexPhone, regexName, regexPincode}
