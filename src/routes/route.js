@@ -15,7 +15,7 @@ router.post("/login", userController.loginUser)
 
 router.get("/books/:bookId", bookController.getBooksWithReview)
 
-
+router.put("/books/:bookId/review/:reviewId", reviewController.updateReview)
 
 
 
