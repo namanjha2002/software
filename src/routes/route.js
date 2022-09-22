@@ -13,7 +13,14 @@ router.post('/register', userController.createUser)
 
 router.post("/login", userController.loginUser)
 
+router.post("/books", middleware.authentication, bookController.createBook)
+
 router.get("/books/:bookId", bookController.getBooksWithReview)
+
+
+// Review API
+
+router.post("/books/:bookId/review", reviewController.createReview)
 
 
 

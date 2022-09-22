@@ -4,7 +4,7 @@ const bookModel = require('../models/bookModel')
 
 const authentication = async function(req, res, next){
     try {
-        let token = req.headers(x-api-key)
+        let token = req.header("x-api-key")
         if(!token){
             return res.status(404).send({status:false, msg: "Token must be present"})
         }
@@ -39,12 +39,12 @@ const authorisation = async function (req, res, next){
     }
 }
 
-let decodedId = req.token.userId
+// let decodedId = req.token.userId
 
-let userId = req.body.userId
-if(decodedId !== userId){
-    return res.status(403).send({status: false, msg: "unauthorised access"})
-}
+// let userId = req.body.userId
+// if(decodedId !== userId){
+//     return res.status(403).send({status: false, msg: "unauthorised access"})
+// }
 
 
 module.exports = {authentication, authorisation}
