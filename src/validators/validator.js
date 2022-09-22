@@ -16,6 +16,8 @@ const regexEmail = /^\s*[a-zA-Z0-9]+([\.\-\_\+][a-zA-Z0-9]+)*@[a-zA-Z]+([\.\-\_]
 const regexPassword = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,15}$/
 const regexPhone = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/
 const regexPincode = /^(\d{4}|\d{6})$/
+const regexIsbn =/^(97(8|9))?\d{9}(\d|X)$/
+const regexRating =/[+]?([0-4]*\.[0-9]+|[0-5])/
 
 
-module.exports = {isValid, isValidObjectId, regexEmail, regexPassword, regexPhone, regexName, regexPincode}
+module.exports = {isValid, isValidObjectId, regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn, regexRating}

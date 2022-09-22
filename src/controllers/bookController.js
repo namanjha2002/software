@@ -12,9 +12,8 @@ const createBook = async function (req, res) {
         let { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted } = data;
 
         let decodedId = req.token.userId
-
-        let usersId = userId
-        if (decodedId !== usersId) {
+        console.log(decodedId)
+        if (decodedId !== userId) {
             return res.status(403).send({ status: false, msg: "unauthorised access" })
         }
 

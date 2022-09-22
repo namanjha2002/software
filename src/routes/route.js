@@ -9,13 +9,28 @@ router.get('/test', function(req, res){
     return res.send({status: true, msg: "running"})
 })
 
+// User API-----------------------------------------------------------------------------------------------------
+
 router.post('/register', userController.createUser)
 
 router.post("/login", userController.loginUser)
 
+// Books API------------------------------------------------------------------------------------------
+
+router.post("/books", middleware.authentication, bookController.createBook)
+
+router.get("/books", middleware.authentication, bookController.getBooks)
+
 router.get("/books/:bookId", bookController.getBooksWithReview)
 
+// Review API-------------------------------------------------------------------------------------
+
+router.post("/books/:bookId/review", reviewController.createReview)
+
 router.put("/books/:bookId/review/:reviewId", reviewController.updateReview)
+
+
+
 
 
 
