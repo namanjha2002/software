@@ -78,6 +78,25 @@ const createBook = async function (req, res) {
     }
 }
 
+const getBooks = async function (req, res) {
+    try {
+        let data = req.query
+        let userId = data.userId
+        if (userId) {
+            if (!isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "userId not valid" })
+        }
+        const getallbooks = await bookModel.find({ ...data, isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1 ,reviews:1}).sort({ title: 1 })
+        getallbooks.sort((a, b) => a.name.localeCompare(b.name))
+
+        if (!getallbooks) {
+            return res.status(404).send({ status: false, msg: "books not found" })
+        }
+        return res.status(200).send({ status: true, data: getallbooks, mgs: "all books are fetch successfully" })
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, message: error.message })
+    }
+}
 
 const getBooksWithReview = async function (req, res) {
     try {
@@ -115,3 +134,4 @@ const getBooksWithReview = async function (req, res) {
 
 module.exports.createBook = createBook
 module.exports.getBooksWithReview = getBooksWithReview
+module.exports.getBooks = getBooks
