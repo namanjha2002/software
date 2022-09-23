@@ -21,7 +21,12 @@ router.post("/books", middleware.authentication, bookController.createBook)
 
 router.get("/books", middleware.authentication, bookController.getBooks)
 
-router.get("/books/:bookId", bookController.getBooksWithReview)
+router.get("/books/:bookId",middleware.authentication, bookController.getBooksWithReview)
+
+router.put("/books/:bookId",middleware.authentication,middleware.authorisation,bookController.updateBook)
+
+
+router.delete("/books/:bookId",middleware.authentication,middleware.authorisation,bookController.deleteBookByParam)
 
 // Review API-------------------------------------------------------------------------------------
 
@@ -29,8 +34,7 @@ router.post("/books/:bookId/review", reviewController.createReview)
 
 router.put("/books/:bookId/review/:reviewId", reviewController.updateReview)
 
-
-
+router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview)
 
 
 

@@ -3,54 +3,74 @@ const mongoose = require('mongoose')
 const moment = require('moment');
 const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
-const { isValid, regexIsbn, regexRating, regexName, isValidObjectId } = require("../validators/validator")
+const { isValid, regexIsbn,  regexName, isValidObjectId,onlyNumbers,isValidnumber } = require("../validators/validator")
 
 const createReview = async function (req, res) {
     try {
+        let bookId= req.params.bookId
+        if(!isValidObjectId(bookId))
+        return res.status(400).send({status:false, mgs:"please provide valid book id"})
+
+        let checkId= await bookModel.findById(bookId)
+        if(!checkId)
+        return res.status(404).send({status:false, msg:"book not found"})
+
+        if (checkId.isDeleted == true) {
+            return res.status(404).send({ status: false, msg: "book is already deleted" })
+        }
+
         let data = req.body
-        let { bookId, reviewedBy, reviewedAt, rating, isDeleted } = data
+        let {  reviewedBy, reviewedAt, rating, isDeleted, review } = data
+
+        let Obj={}
 
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "please provide some data to create review" })
         }
-
-        if (!isValid(bookId)) {
-            return res.status(400).send({ status: false, msg: "please provide bookId" })
+          Obj.bookId=bookId
+         
+        if(reviewedBy){
+            if (!isValid(reviewedBy)) {
+                return res.status(400).send({ status: false, msg: "reviewers name is in proper format" })
+            }
+             if(!regexName.test(reviewedBy))
+             return res.status(400).send({ status: false, msg: "reviewers name is invalid" })
+           
+                Obj.reviewedBy=req.body.reviewedBy
+        }else{
+            Obj.reviewedBy="Guest"
         }
-        if (!isValidObjectId(bookId)) {
-            return res.status(400).send({ status: false, msg: "please provide  valid bookId" })
-        }
-        let checkBook = await bookModel.findById(bookId)
-        if (!checkBook) return res.status(404).send({ status: false, msg: "bookId not found" })
-        if (checkBook.isDeleted == true) {
-            return res.status(404).send({ status: false, msg: "book is already deleted" })
-        }
-
-        if (!isValid(reviewedBy)) {
-            return res.status(400).send({ status: false, msg: "please provide reviewer details" })
-        }
-
+          
         if (!reviewedAt) {
-            return res.status(400).send({ status: false, msg: "please provide the date of review" })
+            Obj.reviewedAt= Date.now()
         }
-        if (reviewedAt) {
-            moment().format("YYYY-MM-DD")
-        }
+        
 
         if (!rating) {
-            return res.status(400).send({ status: false, msg: "rating is only in number" })
+            return res.status(400).send({ status: false, msg: "rating is only in required" })
         }
+        if (rating){
 
-        if (!regexRating.test(rating)) {
-            return res.status(400).send({ status: false, msg: "please rating between 1 - 5" })
+        if(!(typeof rating ==="number")){
+          return res.status(400).send({status:false, msg:"rating should be a number"})
         }
+          if (!onlyNumbers(rating))
+          return res.status(400).send({status:false, msg:"rating should be between 1 to 5"})
+          }
+
+        
+        Obj.rating=rating
+
+          Obj.review=review
 
         if (isDeleted == true) {
             return res.status(400).send({ status: false, msg: "you are deleting your data on the time of creation" })
         }
-
-        const reviewCreate = await reviewModel.create(data)
-        return res.status(201).send({ status: false, msg: "review is successfully done", data: reviewCreate })
+        Obj.isDeleted=isDeleted
+        const reviewCreate = await reviewModel.create(Obj)
+        
+       const addCount= await bookModel.findOneAndUpdate({_id:bookId},{$inc:{reviews:1}},  {new:true})
+        return res.status(201).send({ status: true, msg: "review is successfully done", data: addCount, reviewCreate })
 
     } catch (error) {
         return res.status(500).send({ status: false, msg: error.message })
@@ -79,33 +99,33 @@ const updateReview = async function (req, res) {
         }
 
 
-        if (review) {
+         if (review)
             if (!isValid(review)) {
                 return res.status(400).send({ status: false, msg: "please provide review in proper format" })
             }
 
-        }
+        
 
-        if (reviewedBy) {
-
+        
+           if(reviewedBy)
             if (!isValid(reviewedBy)) {
                 return res.status(400).send({ status: false, msg: "please provide reviewedBy in proper format." })
             };
             if (!regexName.test(reviewedBy)) {
                 return res.status(400).send({ status: false, msg: "reviewedBy is invalid" })
             };
-        };
+        
 
 
-        if (rating) {
+         if (rating)
 
-            if (!isValid(rating)) {
-                return res.status(400).send({ status: false, msg: "please provide rating in proper format" })
-            };
-            if (!regexRating.test(rating)) {
-                return res.status(400).send({ status: false, msg: "rating must be between 1 and 5" })
-            };
-        };
+          if(!(typeof rating ==="number")){
+            return res.status(400).send({status:false, msg:"rating should be a number"})
+          }
+            if (!onlyNumbers(rating))
+            return res.status(400).send({status:false, msg:"rating should be between 1 to 5"})
+            
+        
 
 
         const findBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
@@ -121,14 +141,73 @@ const updateReview = async function (req, res) {
         }
 
         const updateReviewDetails = await reviewModel.findOneAndUpdate({ _id: reviewId }, { $set: data }, { new: true })
-        return res.status(200).send({ status: true, message: "Successfully updated the review of the book.", data: updateReviewDetails })
+        return res.status(200).send({ status: true, message: "Successfully updated the review of the book.", data: findBook, updateReviewDetails })
 
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
+   }
+
+// =-----===============================================================================================================
+
+const deleteReview = async function (req, res) {
+    try {
+
+        let bookId = req.params.bookId;
+        
+        if (!isValidObjectId(bookId))
+            return res.status(400).send({ status: false, message: "Please enter valid bookId...!" })
+
+        const bookExist = await bookModel.findOne({ _id: bookId, isDeleted: false }).select({ deletedAt: 0 })
+
+        if (!bookExist)
+            return res.status(404).send({ status: false, message: "No such book found...!" });
+
+        //reviewId from params
+        let reviewId = req.params.reviewId;
+
+        if (!isValidObjectId(reviewId))
+            return res.status(400).send({ status: false, message: "enter valid reviewId...!" })
+
+        //DB call
+        const reviewExist = await reviewModel.findOne({ _id: reviewId, bookId: bookId })
+
+        if (!reviewExist) return res.status(404).send({ status: false, message: "review not found...!" })
+
+
+
+        if (reviewExist.isDeleted == true)
+            return res.status(400).send({ status: false, data: "review is already deleted...!" })
+        if (reviewExist.isDeleted == false) {   //condition wants to excecute
+
+
+
+            await reviewModel.findOneAndUpdate(
+                { _id: reviewId, bookId: bookId, isDeleted: false },
+                { $set: { isDeleted: true } },
+                { new: true }
+            );
+
+            const addCount= await bookModel.findOneAndUpdate({_id:bookId},{$inc:{reviews:-1}},  {new:true})
+
+            return res.status(200).send({ status: true, msg: 'successfully deleted review' });
+        }
+    }
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+
+    }
 }
 
 
 
-module.exports = { createReview, updateReview }
+
+
+
+
+
+
+
+
+module.exports = { createReview, updateReview, deleteReview }
