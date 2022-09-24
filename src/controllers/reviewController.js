@@ -99,31 +99,33 @@ const updateReview = async function (req, res) {
         }
 
 
-         if (review)
+        if (Object.values(data).includes(review)){
             if (!isValid(review)) {
                 return res.status(400).send({ status: false, msg: "please provide review in proper format" })
             }
+        }
 
         
-
         
-           if(reviewedBy)
+           if (Object.values(data).includes(reviewedBy)){
             if (!isValid(reviewedBy)) {
                 return res.status(400).send({ status: false, msg: "please provide reviewedBy in proper format." })
             };
             if (!regexName.test(reviewedBy)) {
                 return res.status(400).send({ status: false, msg: "reviewedBy is invalid" })
-            };
+            }
+        }
         
 
 
-         if (rating)
+         if (Object.values(data).includes(rating)){
 
           if(!(typeof rating ==="number")){
             return res.status(400).send({status:false, msg:"rating should be a number"})
           }
             if (!onlyNumbers(rating))
             return res.status(400).send({status:false, msg:"rating should be between 1 to 5"})
+        }
             
         
 
@@ -164,13 +166,13 @@ const deleteReview = async function (req, res) {
         if (!bookExist)
             return res.status(404).send({ status: false, message: "No such book found...!" });
 
-        //reviewId from params
+        
         let reviewId = req.params.reviewId;
 
         if (!isValidObjectId(reviewId))
             return res.status(400).send({ status: false, message: "enter valid reviewId...!" })
 
-        //DB call
+        
         const reviewExist = await reviewModel.findOne({ _id: reviewId, bookId: bookId })
 
         if (!reviewExist) return res.status(404).send({ status: false, message: "review not found...!" })
@@ -178,8 +180,8 @@ const deleteReview = async function (req, res) {
 
 
         if (reviewExist.isDeleted == true)
-            return res.status(400).send({ status: false, data: "review is already deleted...!" })
-        if (reviewExist.isDeleted == false) {   //condition wants to excecute
+            return res.status(404).send({ status: false, data: "review is already deleted...!" })
+        if (reviewExist.isDeleted == false) {   
 
 
 

@@ -44,11 +44,12 @@ const regexPassword = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,15}$/
 const regexPhone = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/
 const regexPincode = /^(\d{4}|\d{6})$/
 const regexIsbn =/^(97(8|9))?\d{9}(\d|X)$/
+const regexDate = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/
 
 
 
 
-module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidtitle,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn, }
+module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidtitle,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn,regexDate }
 
 
 
