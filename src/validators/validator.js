@@ -31,6 +31,13 @@ function onlyNumbers(val){
     }
     return true
 }
+function checkObject(value){
+    if (typeof value == "undefined" || typeof value == null || typeof value!= 'object') {
+        return false
+     }else{
+        return true
+     }
+}
 
 
 
@@ -49,7 +56,7 @@ const regexDate = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/
 
 
 
-module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidtitle,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn,regexDate }
+module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidtitle,checkObject,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn,regexDate }
 
 
 

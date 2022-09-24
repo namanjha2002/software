@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bookModel = require('../models/bookModel')
+const {isValidObjectId}= require('../validators/validator')
 
 
 const authentication = async function(req, res, next){
@@ -28,6 +29,8 @@ const authentication = async function(req, res, next){
 const authorisation = async function (req, res, next){
     try {
         let bookId = req.params.bookId
+        if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "Please Enter correct Book Id" })
+
         let findBook = await bookModel.findById(bookId)
         if(!findBook){
             return res.status(404).send({status: false, msg: "bookId not found"})

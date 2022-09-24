@@ -59,10 +59,10 @@ const createBook = async function (req, res) {
         if (!isValid(releasedAt)) {
             return res.status(400).send({ status: false, msg: "please provide releasedAt in proper format" })
         }
-        if (releasedAt) {
-            
-            moment().format("YYYY-MM-DD")
+        if (!regexDate.test(releasedAt)) {
+            return res.status(400).send({ status: false, msg: "please provide Valid Date" })
         }
+        
 
         let bookdata = { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted }
 
@@ -106,7 +106,7 @@ const getBooksWithReview = async function (req, res) {
         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "Please Enter correct Book Id" })
 
-        const getBook = await bookModel.findOne({ _id: bookId })
+        const getBook = await bookModel.findOne({ _id: bookId, isDeleted: false})
         if (!getBook) {
             return res.status(404).send({ status: false, message: "Book Not Found" })
         }
@@ -138,6 +138,7 @@ const updateBook = async function (req, res) {
     try {
         let bookId = req.params.bookId
         if (!isValidObjectId(bookId)) return res.status(400).send({ status: false, message: "Please Enter correct Book Id" })
+
 
         const bookIdExist = await bookModel.findOne({ _id: bookId })
         if (!bookIdExist) return res.status(404).send({ status: false, message: "Book Not Found" })
@@ -217,7 +218,7 @@ const deleteBookByParam = async function (req, res) {
             return res.status(404).send({ status: false, message: "Book  already deleted" })
         }
         
-        let deletebook = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: new Date() } })
+        let deletebook = await bookModel.findOneAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: Date.now() } })
         
         return res.status(200).send({ status: true, message: "deleted successfully" })
     }

@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const moment = require('moment');
 const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
-const { isValid, regexIsbn,  regexName, isValidObjectId,onlyNumbers,isValidnumber } = require("../validators/validator")
+const { isValid, regexIsbn,  regexName, isValidObjectId,onlyNumbers,isValidnumber,regexDate } = require("../validators/validator")
 
 const createReview = async function (req, res) {
     try {
@@ -21,7 +21,7 @@ const createReview = async function (req, res) {
 
         let data = req.body
         let {  reviewedBy, reviewedAt, rating, isDeleted, review } = data
-
+       
         let Obj={}
 
         if (Object.keys(data).length == 0) {
@@ -40,14 +40,19 @@ const createReview = async function (req, res) {
         }else{
             Obj.reviewedBy="Guest"
         }
-          
+          if(reviewedAt){
+            if(!regexDate.test(reviewedAt)){
+                return res.status(400).send({ status: false,msg: "please provide valid date" })
+            }
+            Obj.reviewedAt = reviewedAt
+          }
         if (!reviewedAt) {
             Obj.reviewedAt= Date.now()
         }
         
 
         if (!rating) {
-            return res.status(400).send({ status: false, msg: "rating is only in required" })
+            return res.status(400).send({ status: false, msg: "rating is required" })
         }
         if (rating){
 
