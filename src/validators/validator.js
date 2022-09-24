@@ -5,7 +5,7 @@ const isValid = function(value){
     if(typeof value === "string" && value.trim().length === 0 ) return false
     return true
 }
-const isValidnumber = function(value){
+const isValidtitle = function(value){
     if(typeof value === "undefined" || value === null || typeof value != 'string') return false
     if(typeof value === "string" && value.trim().length === 0 ) return false
     return true
@@ -48,7 +48,7 @@ const regexIsbn =/^(97(8|9))?\d{9}(\d|X)$/
 
 
 
-module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidnumber,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn, }
+module.exports = {isValid, isValidObjectId,  onlyNumbers  ,isValidtitle,regexEmail, regexPassword, regexPhone, regexName, regexPincode, regexIsbn, }
 
 
 

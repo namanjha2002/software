@@ -46,6 +46,9 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, msg: "please provide valid password" })
         }
         if (address) {
+            if(Object.keys(address).length===0){
+                return res.status(400).send({status:false, msg: " please provide somthing in address"})
+            }
             if (!isValid(address.street || address.city || address.pincode)) {
                 return res.status(400).send({ status: false, msg: "please provide address in proper format" })
             }

@@ -3,7 +3,7 @@ const moment = require('moment');
 const userModel = require('../models/userModel')
 const bookModel = require('../models/bookModel')
 const reviewModel = require('../models/reviewModel')
-const { isValid, regexIsbn, regexRating, isValidObjectId } = require("../validators/validator")
+const { isValid, regexIsbn, regexRating, isValidObjectId, isValidtitle } = require("../validators/validator")
 
 // -----------------------------------------------------------------------------------------------------------------------
 const createBook = async function (req, res) {
@@ -60,7 +60,8 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "please provide releasedAt in proper format" })
         }
         if (releasedAt) {
-            moment().format("YYYY-MM-DD")
+            Date.now()
+            // moment().format("YYYY-MM-DD")
         }
 
         let bookdata = { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted }
@@ -68,7 +69,7 @@ const createBook = async function (req, res) {
         let saveBook = await bookModel.create(bookdata);
         return res.status(201).send({ status: true, msg: "book created successfully", data: saveBook })
     }
-
+ 
     catch (err) {
         return res.status(500).send({ status: false, msg: err.message })
     }
@@ -149,13 +150,17 @@ const updateBook = async function (req, res) {
 
         let filter = {}
 
-        if (title) {
-            if (!isValid(title)) return res.status(400).send({ status: false, message: "please provide a title" })
-
+        // if (title) {
+        //     if (!isValid(title)) return res.status(400).send({ status: false, message: "please provide a title" })
+        // }
+        if(title)
+        if(!isValid(title))
+            return res.status(400).send({status:false,msg: "please provide title in proper format"})
+    
             let checkTitle = await bookModel.findOne({ title })
             if (checkTitle) return res.status(400).send({ status: false, message: "book with same title is already present...!" })
             filter.title = title
-        }
+        
 
         if (excerpt) {
             if (!isValid(excerpt)) return res.status(400).send({ status: false, message: "please provide a excerpt" })
