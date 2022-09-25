@@ -77,44 +77,31 @@ const createBook = async function (req, res) {
 // --------------------------------------------------------------------------------------------------------------------
 const getBooks = async function (req, res) {
     try {
-
-
-        let data = req.query
-        let userId = data.userId
-        if (userId) {
-            if (!isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "userId not valid" })
-            const getuser = await userModel.findById(userId)
-            if (!getuser) {
-                return res.status(404).send({ status: false, msg: "user not found" })
+        const { userId, category, subcategory } = req.query
+        const filterBook = { isDeleted: false }
+        if (userId || userId == "") {
+            if (!isValid(userId)) {
+                return res.status(400).send({ status: false, message: "Invalid userId" })
             }
+            filterBook["userId"] = userId
         }
-        if (data.category) {
-            if (!isValidObjectId(data.category)) return res.status(400).send({ status: false, msg: "category not valid" })
-            const getcategory = await userModel.findById(data.category)
-            if (!getcategory) {
-                return res.status(404).send({ status: false, msg: "category not found" })
-            }
+        if (category) {
+            filterBook["category"] = category
         }
-        if (data.subcategory) {
-            if (!isValidObjectId(data.subcategory)) return res.status(400).send({ status: false, msg: "subcategory not valid" })
-            const getsubcategory = await userModel.findById(data.subcategory)
-            if (!getsubcategory) {
-                return res.status(404).send({ status: false, msg: "subcategory not found" })
-            }
+        if (subcategory) {
+            const subcategoryArr = subcategory.trim().split(',').map(subcategory => subcategory.trim())
+            filterBook['subcategory'] = { $all: subcategoryArr }
         }
-
-        const getallbooks = await bookModel.find({ data, isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-        if (!getallbooks) {
-            return res.status(404).send({ status: false, msg: "books not found" })
+        let returnBooks = await bookModel.find(filterBook).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).sort({ title: 1 })
+        if (Object.keys(returnBooks).length == 0) {
+            return res.status(404).send({ status: false, message: " book not found" })
         }
-        const count = await bookModel.find({ data, isDeleted: false }).count()
-
-
-
-        return res.status(200).send({ status: true, message: "Book List", TotalBook: count, data: getallbooks, mgs: "all books are fetch successfully" })
+        else {
+            return res.status(200).send({ status: true, message: 'Books list', data: returnBooks })
+        }
     }
-    catch (error) {
-        return res.status(500).send({ status: false, message: error.message })
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 // -------------------------------------------------------------------------------------------------------------------
