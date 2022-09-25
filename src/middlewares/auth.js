@@ -46,12 +46,5 @@ const authorisation = async function (req, res, next){
     }
 }
 
-// let decodedId = req.token.userId
-
-// let userId = req.body.userId
-// if(decodedId !== userId){
-//     return res.status(403).send({status: false, msg: "unauthorised access"})
-// }
-
 
 module.exports = {authentication, authorisation}

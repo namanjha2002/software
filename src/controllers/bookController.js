@@ -12,7 +12,6 @@ const createBook = async function (req, res) {
         let { title, excerpt, ISBN, category, reviews, subcategory, releasedAt, userId, isDeleted } = data;
 
         let decodedId = req.token.userId
-        console.log(decodedId)
         if (decodedId !== userId) {
             return res.status(403).send({ status: false, msg: "unauthorised access" })
         }
@@ -88,12 +87,13 @@ const getBooks = async function (req, res) {
          
 
         const getallbooks = await bookModel.find({ ...data, isDeleted: false }).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1 }).sort({ title: 1 })
-    
+        const count = await bookModel.find({ ...data, isDeleted: false }).count()
 
         if (!getallbooks) {
             return res.status(404).send({ status: false, msg: "books not found" })
         }
-        return res.status(200).send({ status: true, data: getallbooks, mgs: "all books are fetch successfully" })
+
+        return res.status(200).send({ status: true, message: "Book List", TotalBook: count, data: getallbooks, mgs: "all books are fetch successfully" })
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -121,8 +121,6 @@ const getBooksWithReview = async function (req, res) {
         obj.releasedAt = getBook.releasedAt
         obj.createdAt = getBook.createdAt
         obj.updatedAt = getBook.updatedAt
-
-        console.log(getBook._id)
 
         const getReviewData = await reviewModel.find({ bookId: getBook._id })
         obj.reviewsData = getReviewData
